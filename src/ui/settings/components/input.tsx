@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IconEyeClosed, IconEye } from "@tabler/icons-react";
 import clsx from "clsx";
 import { ZodSchema } from "zod";
@@ -16,6 +16,10 @@ export default function Input(props: {
   const [value, setValue] = useState<any>(props.value);
   const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    setValue(props.value);
+  }, [props.value]);
 
   return (
     <div

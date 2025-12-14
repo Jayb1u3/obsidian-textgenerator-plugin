@@ -6,6 +6,7 @@ import debug from "debug";
 import { transformStringsToChatFormat } from ".";
 import { LLMConfig } from "../LLMProviders/interface";
 import { AI_MODELS } from "#/constants";
+import { buildRequestBodyFromParams } from "#/settings/request-payload";
 const logger = debug("textgenerator:ReqFormatter");
 export default class ReqFormatter {
   plugin: TextGeneratorPlugin;
@@ -77,15 +78,10 @@ export default class ReqFormatter {
     if (params.includeAttachmentsInRequest ?? params.advancedOptions?.includeAttachmentsInRequest)
       params.prompt = await this.plugin.contextManager.splitContent(params.prompt, params.noteFile, (AI_MODELS[params.model?.toLowerCase()] || AI_MODELS["models/" + params.model?.toLowerCase()])?.inputOptions || {})
 
-    let bodyParams: Partial<LLMConfig & { prompt: string }> & {
-      messages: Message[];
-    } = {
-      ...(params.model && { model: params.model }),
-      ...(params.max_tokens && { max_tokens: params.max_tokens }),
-      ...(params.temperature && { temperature: params.temperature }),
-      ...(params.frequency_penalty && {
-        frequency_penalty: params.frequency_penalty,
-      }),
+    const providerOriginalId = this.plugin.textGenerator.LLMProvider?.originalId;
+
+    let bodyParams: Partial<LLMConfig & { prompt: string }> & { messages: Message[] } = {
+      ...buildRequestBodyFromParams({ params, providerOriginalId }),
       messages: [],
     };
 

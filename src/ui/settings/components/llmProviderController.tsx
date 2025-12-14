@@ -27,10 +27,12 @@ export default function LLMProviderController(props: {
   triggerResize(): void;
   /** Minimal, aka just select the llm provider */
   mini?: boolean;
+  /** Optional override to associate all items with a parent section (for search + grouping). */
+  sectionId?: string;
 }) {
   const global = useGlobal();
   let llmList = global.plugin.textGenerator.LLMRegestry.getList();
-  const sectionId = useId();
+  const sectionId = props.sectionId || useId();
   const [selectedLLM, setSelectedLLM] = useState<
     LLMProviderInterface | undefined
   >();

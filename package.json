@@ -9,6 +9,8 @@
   "scripts": {
     "dev": "npm run build:css && node esbuild.config.mjs",
     "build": "npm run build:css && node esbuild.config.mjs production",
+    "deploy:bak01": "npm run build && node ./scripts/deploy-to-obsidian.mjs --plugin-dir \"../.obsidian/plugins/obsidian-textgenerator-plugin.bak01\"",
+    "deploy:bak01:dry": "node ./scripts/deploy-to-obsidian.mjs --plugin-dir \"../.obsidian/plugins/obsidian-textgenerator-plugin.bak01\" --dry-run",
     "version": "node version-bump.mjs",
     "version:go": "node ./scripts/version-bump.mjs --go",
     "eslint": "eslint  --fix ./src/**/*.{js,jsx,ts,tsx,json}",

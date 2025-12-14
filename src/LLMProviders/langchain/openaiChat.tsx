@@ -33,11 +33,35 @@ export default class LangchainOpenAIChatProvider
     this.llmClass = ChatOpenAI;
   }
 
-  //   getLLM(options: LLMConfig) {
-  //     return new ChatOpenAI({
-  //       ...this.getConfig(options),
-  //     });
-  //   }
+  /**
+   * Override getConfig to handle gpt-5.x models which:
+   * - Require max_completion_tokens instead of maxTokens
+   * - Do not support frequency_penalty or presence_penalty
+   * - Have a minimum max_completion_tokens of 1
+   */
+  getConfig(options: LLMConfig) {
+    const baseConfig = super.getConfig(options);
+    
+    // Coerce max_tokens to a safe default (minimum 1)
+    const maxTokens = Math.max(1, +options.max_tokens || 400);
+    
+    // For newer OpenAI models (gpt-5.x, gpt-4-turbo, etc.), use max_completion_tokens
+    // and strip unsupported penalties
+    const config: any = {
+      ...baseConfig,
+      maxTokens: maxTokens,
+      // Strip frequency and presence penalties for models that don't support them
+      frequencyPenalty: undefined,
+      presencePenalty: undefined,
+    };
+
+    // Add max_completion_tokens for newer API versions via bodyParams
+    config.bodyParams = {
+      max_completion_tokens: maxTokens,
+    };
+
+    return config;
+  }
 
   RenderSettings(props: Parameters<LLMProviderInterface["RenderSettings"]>[0]) {
     const global = useGlobal();
